@@ -1,0 +1,34 @@
+version: '3.0'
+
+services:
+
+  localstack:
+    image: localstack/localstack:latest
+    hostname: localstack
+    environment:
+      - AWS_DEFAULT_REGION=eu-central-1
+      - EDGE_PORT=4566
+      - SERVICES=dynamodb
+      - LOCALSTACK_HOST=localstack
+      - DYNAMODB_SHARE_DB=1
+    ports:
+      - '4566:4566'
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./deploy/scripts/localstack:/etc/localstack/init/ready.d"
+
+  service:
+    build:
+      context: ./
+      dockerfile: ./deploy/docker/Dockerfile
+    image: url-shortener
+    depends_on:
+      - localstack
+    hostname: url-shortener
+    environment:
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      "com.jetbrains.akaluzhonak.urlshortener.dynamodb.endpointOverride": http://localstack:4566
+    ports:
+      - 8080:8080

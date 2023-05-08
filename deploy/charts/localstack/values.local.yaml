@@ -1,0 +1,12 @@
+image:
+  tag: 1.4.0
+startServices: dynamodb
+
+extraEnvVars:
+   - name: DYNAMODB_SHARE_DB
+     value: "1"
+
+enableStartupScripts: true
+startupScriptContent: |
+  awslocal dynamodb create-table --table-name Links --attribute-definitions AttributeName=Id,AttributeType=S --key-schema AttributeName=Id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=5
+  awslocal dynamodb update-time-to-live --table-name Links --time-to-live-specification Enabled=true,AttributeName=ExpireAt

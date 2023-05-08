@@ -1,0 +1,9 @@
+secrets:
+  awsAccessKey: "test"
+  awsAccessSecretKey: "test"
+
+dynamodb:
+  endpoint: http://localstack-release:4566
+
+service:
+  type: NodePort
